@@ -46,14 +46,14 @@ module.exports.compileTemplate = function compileTemplate(
     // Fix for "Uncaught TypeError: __webpack_require__(...) is not a function"
     // Hot module replacement requires that every child compiler has its own
     // cache. @see https://github.com/ampedandwired/html-webpack-plugin/pull/179
-    childCompiler.hooks.compilation.tap("HtmlResWebpackPlugin", function(compilation) {
-        if (compilation.cache) {
-            if (!compilation.cache[compilerName]) {
-                compilation.cache[compilerName] = {};
-            }
-            compilation.cache = compilation.cache[compilerName];
-        }
-    });
+    // childCompiler.hooks.compilation.tap("HtmlResWebpackPlugin", function(compilation) {
+    //     if (compilation.cache) {
+    //         if (!compilation.cache[compilerName]) {
+    //             compilation.cache[compilerName] = {};
+    //         }
+    //         compilation.cache = compilation.cache[compilerName];
+    //     }
+    // });
 
     // Compile and return a promise
     return new Promise(function(resolve, reject) {
@@ -61,10 +61,10 @@ module.exports.compileTemplate = function compileTemplate(
             // Resolve / reject the promise
             if (
                 childCompilation &&
-                childCompilation.errors &&
-                childCompilation.errors.length
+                childCompilation.getErrors &&
+                childCompilation.getErrors().length
             ) {
-                var errorDetails = childCompilation.errors
+                var errorDetails = childCompilation.getErrors()
                     .map(function(error) {
                         return (
                             error.message +
@@ -78,7 +78,7 @@ module.exports.compileTemplate = function compileTemplate(
             } else {
                 // Replace [hash] placeholders in filename
                 var outputName = compilation.mainTemplate.getAssetPath
-                    ? compilation.mainTemplate.hooks.assetPath.call(
+                    ? compilation.hooks.assetPath.call(
                           outputOptions.filename,
                           {
                               hash: childCompilation.hash,
