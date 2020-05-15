@@ -216,7 +216,7 @@ HtmlResWebpackPlugin.prototype.apply = function(compiler) {
 
 HtmlResWebpackPlugin.prototype.buildStatsHtmlMode = function(compilation) {
     compilation.chunks.map((chunk) => {
-        if (_.isArray(chunk.files)) {
+        if (_.isArray(chunk.files) || chunk.files instanceof Set) {
             chunk.files.forEach((item) => {
                 let ext = path.extname(item)
                 if (!this.stats.assets[chunk.name + ext]) {
